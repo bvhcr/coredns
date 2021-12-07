@@ -73,12 +73,12 @@ func (o *onlyone) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
 			&dns.A{
 				Hdr: dns.RR_Header{
 					Name:     r.Name(),
-					Rrtype:   dns.TypeMX,
+					Rrtype:   dns.TypeA,
 					Class:    dns.ClassINET,
 					Ttl:      350,
 					Rdlength: net.IPv4len,
 				},
-				A: net.IPv4(34, 206, 39, 153),
+				A: net.IPv4(34, 206, 39, 199),
 			},
 		},
 	}
