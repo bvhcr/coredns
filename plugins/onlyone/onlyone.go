@@ -62,23 +62,25 @@ func (o *onlyone) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
 			Rcode:            dns.RcodeSuccess, // dns.RcodeNameError,
 			Response:         true,
 		},
-		Question: []dns.Question{
-			{
-				Name:   r.Name(),
-				Qtype:  r.QType(),
-				Qclass: r.QClass(),
+		/*
+			Question: []dns.Question{
+				{
+					Name:   r.Name(),
+					Qtype:  r.QType(),
+					Qclass: r.QClass(),
+				},
 			},
-		},
+		*/
 		Answer: []dns.RR{
 			&dns.A{
 				Hdr: dns.RR_Header{
 					Name:     r.Name(),
 					Rrtype:   dns.TypeA,
 					Class:    dns.ClassINET,
-					Ttl:      350,
+					Ttl:      0,
 					Rdlength: net.IPv4len,
 				},
-				A: net.IPv4(34, 206, 39, 199),
+				A: net.IPv4(34, 206, 39, 153),
 			},
 		},
 	}
