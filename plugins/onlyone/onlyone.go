@@ -26,6 +26,7 @@ func (o *onlyone) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 	r *dns.Msg) (int, error) {
 	// The request struct is a convenience struct.
 	state := request.Request{W: w, Req: r}
+	log.Debugf("user req: %d\n", r.MsgHdr.Id)
 
 	// If the zone does not match one of ours, just pass it on.
 	if plugin.Zones(o.zones).Matches(state.Name()) == "" {
@@ -41,6 +42,7 @@ func (o *onlyone) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 		// Simply return if there was an error.
 		return rcode, err
 	}
+	log.Debugf("user resp: %+v\n", nw.Msg)
 
 	// Now we know that a successful response was received from a plugin
 	// that appears later in the chain. Next is to examine that response
