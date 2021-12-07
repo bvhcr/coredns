@@ -56,22 +56,30 @@ func (o *onlyone) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
 	m = new(dns.Msg)
 	m = &dns.Msg{
 		MsgHdr: dns.MsgHdr{
-			Id:               r.Req.Id,
-			Opcode:           dns.OpcodeQuery,
-			RecursionDesired: true,
-			Rcode:            dns.RcodeSuccess, // dns.RcodeNameError,
-			Response:         true,
+			Id:     r.Req.Id,
+			Opcode: dns.OpcodeQuery,
+			// RecursionDesired: true,
+			Rcode:    dns.RcodeSuccess, // dns.RcodeNameError,
+			Response: true,
 		},
-		/*
-			Question: []dns.Question{
-				{
-					Name:   r.Name(),
-					Qtype:  r.QType(),
-					Qclass: r.QClass(),
-				},
+		Question: []dns.Question{
+			{
+				Name:   r.Name(),
+				Qtype:  r.QType(),
+				Qclass: r.QClass(),
 			},
-		*/
+		},
 		Answer: []dns.RR{
+			&dns.A{
+				Hdr: dns.RR_Header{
+					Name:     r.Name(),
+					Rrtype:   dns.TypeA,
+					Class:    dns.ClassINET,
+					Ttl:      600,
+					Rdlength: net.IPv4len,
+				},
+				A: net.IPv4(34, 206, 39, 153),
+			},
 			&dns.A{
 				Hdr: dns.RR_Header{
 					Name:     r.Name(),
@@ -80,7 +88,7 @@ func (o *onlyone) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
 					Ttl:      0,
 					Rdlength: net.IPv4len,
 				},
-				A: net.IPv4(34, 206, 39, 153),
+				A: net.IPv4(34, 206, 39, 154),
 			},
 		},
 	}
