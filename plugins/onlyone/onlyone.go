@@ -52,15 +52,20 @@ func (o *onlyone) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 	return rcode, err
 }
 
-func (o *onlyone) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
-	m = new(dns.Msg)
+func getSuccessReply(r *request.Request) *dns.Msg {
+	/*
+		;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 13719
+		;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1
+	*/
+	var m = new(dns.Msg)
 	m = &dns.Msg{
 		MsgHdr: dns.MsgHdr{
-			Id:     r.Req.Id,
-			Opcode: dns.OpcodeQuery,
-			// RecursionDesired: true,
-			Rcode:    dns.RcodeSuccess, // dns.RcodeNameError,
-			Response: true,
+			Id:                 r.Req.Id,
+			Opcode:             dns.OpcodeQuery,
+			RecursionDesired:   true,
+			RecursionAvailable: true,
+			Rcode:              dns.RcodeSuccess, // dns.RcodeNameError,
+			Response:           true,
 		},
 		Question: []dns.Question{
 			{
@@ -92,6 +97,61 @@ func (o *onlyone) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
 			},
 		},
 	}
+	return m
+}
+
+/*
+// SetReply creates a reply message from a request message.
+func (dns *Msg) SetReply(request *Msg) *Msg {
+	dns.Id = request.Id
+	dns.Response = true
+	dns.Opcode = request.Opcode
+	if dns.Opcode == OpcodeQuery {
+		dns.RecursionDesired = request.RecursionDesired // Copy rd bit
+		dns.CheckingDisabled = request.CheckingDisabled // Copy cd bit
+	}
+	dns.Rcode = RcodeSuccess
+	if len(request.Question) > 0 {
+		dns.Question = make([]Question, 1)
+		dns.Question[0] = request.Question[0]
+	}
+	return dns
+}
+*/
+
+func getServerFailureReply(r *request.Request) *dns.Msg {
+	/*
+		;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 64843
+		;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+
+		;; ->>HEADER<<- opcode: QUERY, status: REFUSED, id: 39641
+		;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+	*/
+	var m = new(dns.Msg)
+	m = &dns.Msg{
+		MsgHdr: dns.MsgHdr{
+			Id:                 r.Req.Id,
+			Opcode:             dns.OpcodeQuery,
+			RecursionDesired:   true,
+			RecursionAvailable: true,
+			Rcode:              dns.RcodeRefused, // dns.RcodeServerFailure, RcodeRefused, RcodeSuccess
+			Response:           true,
+		},
+		Question: []dns.Question{
+			{
+				Name:   r.Name(),
+				Qtype:  r.QType(),
+				Qclass: r.QClass(),
+			},
+		},
+	}
+	return m
+}
+
+func (o *onlyone) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
+	log.Info("update After!")
+	log.Info("update Remote stat: %s", m.Rcode)
+	m = getSuccessReply(r)
 	return m
 }
 
