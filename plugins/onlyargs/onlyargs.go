@@ -1,10 +1,11 @@
-package onlyone
+package onlyargs
 
 import (
 	"context"
 	"net"
 
 	"github.com/coredns/coredns/plugin"
+	"github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/coredns/coredns/plugin/pkg/nonwriter"
 	"github.com/coredns/coredns/request"
 	"github.com/miekg/dns"
@@ -17,17 +18,17 @@ const (
 
 type typeMap map[uint16]bool
 
-type onlyone struct {
+type onlyargs struct {
 	Next  plugin.Handler
 	zones []string
 	types typeMap
 	pick  func(int) int
 }
 
-func (o *onlyone) Name() string { return "onlyone" }
+func (o *onlyargs) Name() string { return "onlyargs" }
 
 // ServeDNS implements the plugin.Handle interface.
-func (o *onlyone) ServeDNS(ctx context.Context, w dns.ResponseWriter,
+func (o *onlyargs) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 	r *dns.Msg) (int, error) {
 	// The request struct is a convenience struct.
 	state := request.Request{W: w, Req: r}
@@ -175,14 +176,14 @@ func getServerFailureReply(r *request.Request) *dns.Msg {
 	return m
 }
 
-func (o *onlyone) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
+func (o *onlyargs) trimPhantomRecords(r *request.Request, m *dns.Msg) *dns.Msg {
 	log.Info("update After!")
 	log.Info("update Remote stat: %s", m.Rcode)
 	m = getSuccessReply(r)
 	return m
 }
 
-func (o *onlyone) trimRecords(m *dns.Msg) *dns.Msg {
+func (o *onlyargs) trimRecords(m *dns.Msg) *dns.Msg {
 	// The trimming behavior is relatively expensive, so if there is one
 	// or fewer answers, we know it doesn't apply so just return.
 	if len(m.Answer) <= 1 {
