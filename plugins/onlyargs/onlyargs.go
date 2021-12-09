@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/coredns/coredns/plugin"
-	clog "github.com/coredns/coredns/plugin/pkg/log"
+	log "github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/coredns/coredns/plugin/pkg/nonwriter"
 	"github.com/coredns/coredns/request"
 	"github.com/miekg/dns"
@@ -16,7 +16,7 @@ const (
 	ttlMin = 0
 )
 
-var log = clog.NewWithPlugin("onlyargs")
+// var log = clog.NewWithPlugin("onlyargs")
 
 type typeMap map[uint16]bool
 

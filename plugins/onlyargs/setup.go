@@ -8,14 +8,13 @@ import (
 
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
-	clog "github.com/coredns/coredns/plugin/pkg/log"
+	log "github.com/coredns/coredns/plugin/pkg/log"
+	"github.com/miekg/dns"
 
 	"github.com/coredns/caddy"
-
-	"github.com/miekg/dns"
 )
 
-var log = clog.NewWithPlugin("onlyargs")
+// var log = clog.NewWithPlugin("onlyargs")
 
 func init() {
 	caddy.RegisterPlugin("onlyargs", caddy.Plugin{
